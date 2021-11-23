@@ -1,3 +1,5 @@
+import math
+
 def falling(n, k):
     """Compute the falling factorial of n to depth k.
 
@@ -11,7 +13,16 @@ def falling(n, k):
     1
     """
     "*** YOUR CODE HERE ***"
+    factorial = 1
+    i = 0
 
+    while i < k:
+
+        factorial = factorial * (n - i)
+        i = i + 1
+
+    
+    return factorial
 
 def sum_digits(y):
     """Sum all the digits of y.
@@ -27,7 +38,18 @@ def sum_digits(y):
     6
     """
     "*** YOUR CODE HERE ***"
+    
+    a = str(y)
 
+    length = len(a)
+
+    total = 0
+
+    for i in range(length):
+        total = int(a[i]) + total
+    
+
+    return total
 
 def double_eights(n):
     """Return true if n has two eights in a row.
@@ -45,3 +67,20 @@ def double_eights(n):
     False
     """
     "*** YOUR CODE HERE ***"
+
+    a = str(n)
+
+    length = len(a)
+
+    next_val = 0
+
+    for i in range(length):
+        curr_val = int(a[i])
+
+        next_val = int(a[i + 1])
+
+        if curr_val == 8 and next_val == 8:
+
+            return True
+    
+    return False
