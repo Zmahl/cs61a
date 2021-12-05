@@ -1,4 +1,5 @@
 """CS 61A Presents The Game of Hog."""
+from re import DEBUG
 from dice import six_sided, four_sided, make_test_dice
 from ucb import main, trace, interact
 
@@ -297,20 +298,23 @@ def announce_highest(who, last_score=0, running_high=0):
     # BEGIN PROBLEM 7
     def check_highest(score0, score1):
         #Where score is the current players score
-        if (who == 0):
-            score = score0
-            pointGain = score0 - last_score
-        
-        else:
-            score = score1
-            pointGain = score1 - last_score
-        if (pointGain > running_high):
-            if (who == 0):
-                print(f"Player 0 has reached a new maximum point gain. {running_high} point(s)!")
-            else:
-                print(f"Player 1 has reached a new maximum point gain. {running_high} point(s)!")
+        high_score = running_high
+        prev_score = last_score
 
-        return announce_highest(who, score, pointGain)
+        if who == 0:
+            curr_score = score0
+
+        else:
+            curr_score = score1
+
+        gain = curr_score - prev_score
+        
+        print("DEBUG:", high_score, prev_score, curr_score, gain)
+        if gain > high_score:
+            print(f"Player {who} has reached a new maximum point gain. {gain} point(s)!")
+            high_score = gain
+
+        return announce_highest(who, curr_score, high_score)
     # END PROBLEM 7
     return check_highest
 
@@ -350,7 +354,17 @@ def make_averaged(original_function, trials_count=1000):
     3.0
     """
     # BEGIN PROBLEM 8
-    "*** YOUR CODE HERE ***"
+    def averaging_function(*args):
+
+        # Will call the original function equal to the amount of trials requested
+        total = 0
+        for i in range(trials_count):
+            total = total + original_function(*args)
+
+        # Total keeps track of the total values brought from the function call, then divided by trials_count to get the average
+        return total/trials_count
+        
+    return averaging_function
     # END PROBLEM 8
 
 
@@ -364,7 +378,18 @@ def max_scoring_num_rolls(dice=six_sided, trials_count=1000):
     1
     """
     # BEGIN PROBLEM 9
-    "*** YOUR CODE HERE ***"
+    averaged_dice = make_averaged(roll_dice, trials_count)
+    highest_avg_score = 0
+    dice_to_roll = 1
+    
+    for i in range (1, 11):
+        value = averaged_dice(i, dice)
+        
+        if value > highest_avg_score:
+            dice_to_roll = i
+            highest_avg_score = value
+ 
+    return dice_to_roll
     # END PROBLEM 9
 
 
@@ -405,7 +430,11 @@ def piggypoints_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     returns NUM_ROLLS otherwise.
     """
     # BEGIN PROBLEM 10
-    return 6  # Replace this statement
+    test_piggy = piggy_points(opponent_score)
+
+    if test_piggy >= cutoff:
+        return 0
+    return num_rolls
     # END PROBLEM 10
 
 
@@ -415,7 +444,18 @@ def more_boar_strategy(score, opponent_score, cutoff=8, num_rolls=6):
     Otherwise, it returns NUM_ROLLS.
     """
     # BEGIN PROBLEM 11
-    return 6  # Replace this statement
+    test_piggypoints = piggypoints_strategy(score, opponent_score, cutoff, num_rolls)
+
+    test_piggy = piggy_points(opponent_score)
+
+    next_score_turn = test_piggy + score
+
+    test_more_boar = more_boar(next_score_turn, opponent_score)
+
+    if test_more_boar or (test_piggypoints == 0):
+        return 0
+    else:
+        return test_piggypoints
     # END PROBLEM 11
 
 
