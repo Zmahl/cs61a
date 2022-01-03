@@ -197,6 +197,17 @@ def replace_loki_at_leaf(t, lokis_replacement):
     True
     """
     "*** YOUR CODE HERE ***"
+    if is_leaf(t):
+
+        if 'loki' in label(t):
+
+            return [lokis_replacement]
+
+        return [label(t)]
+
+    else:
+
+        return sum([[replace_loki_at_leaf(b, lokis_replacement) for b in branches(t)]], [label(t)])
 
 
 def has_path(t, word):
@@ -232,6 +243,21 @@ def has_path(t, word):
     assert len(word) > 0, 'no path for empty word.'
     "*** YOUR CODE HERE ***"
 
+    #Compares the first letter of the word coming in, to the current label. Prechecks that the preceding values are True, before actually calling True on the last letter
+    if label(t) != word[0]:
+        return False
+    
+    #If we are down to the last letter, that means it all exists, so this will return true
+    elif len(word) == 1:
+        return True
+    
+    #This will call every branch within t, searches for the possible letters
+    for b in branches(t):
+        #Will procedurally take off preceeding letter and check the new "first" letter against all branches still remaining
+        if has_path(b, word[1:]):
+            return True
+
+    return False
 
 def preorder(t):
     """Return a list of the entries in this tree in the order that they
@@ -245,6 +271,15 @@ def preorder(t):
     """
     "*** YOUR CODE HERE ***"
 
+    if is_leaf(t):
+        #Returns the tree as an individual list item
+        return t
+    
+    else:
+
+        #Double array bracket here will create "branch" effect in the array, all non leaf values added as list item with [label(t)]
+        #Sum merges all INDIVIDUAL list items into a singular list
+        return sum([preorder(b) for b in branches(t)], [label(t)])
 
 def str_interval(x):
     """Return a string representation of interval x.
