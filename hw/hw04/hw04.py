@@ -1,3 +1,6 @@
+from typing import Iterable
+
+
 def repeated(t, k):
     """Return the first value in iterator T that appears K times in a row. Iterate through the items such that
     if the same iterator is passed into repeated twice, it continues in the second call at the point it left off
@@ -20,6 +23,17 @@ def repeated(t, k):
     """
     assert k > 1
     "*** YOUR CODE HERE ***"
+    
+    counter = 1
+    prev_num = 0
+    for i in t:
+        if prev_num == i:
+            counter += 1
+            if counter == k:
+                return i
+        else:
+            counter = 1
+        prev_num = i
 
 
 def permutations(seq):
@@ -45,8 +59,21 @@ def permutations(seq):
     [['a', 'b'], ['b', 'a']]
     """
     "*** YOUR CODE HERE ***"
+    if len(seq) == 1:
+        yield seq
 
+    else:
+        m = seq[0]
+        for p in permutations(seq[1:]):
+            for i in range(len(p) + 1):
+                a = list(p[:])
+                a.insert(i, m)
+                #This yield will send each permutation 'up' the recursive calls to the previous for loop
+                #Eg, [2,3] is full calculated before [3,2] is called in the second for loop
+                yield a
 
+            
+            
 def make_generators_generator(g):
     """Generates all the "sub"-generators of the generator returned by
     the generator function g.
@@ -81,13 +108,15 @@ def make_generators_generator(g):
     6
     9
     """
+    #This generator handles another generator that will return the values from every_3_ints_to_10 ONLY if it is greater than x
     def gener(x):
-        for e in ___________:
-            ______________________________
-            if _________________________:
-                ______________________________
-    for e in ___________:
-        ______________________________
+        for e in g():
+            if e <= x:
+                yield e
+    #This element represents the ITEMS in the generator function every_3_ints_to_10
+    for e in g():
+        #There are 4 items, so this is yielded 4 times to another generator
+        yield gener(e)
 
 
 def remainders_generator(m):
