@@ -6,6 +6,7 @@ from os import remove
 import random
 from tabnanny import check
 from tkinter.tix import CheckList
+from typing import Container
 from ucb import main, interact, trace
 from collections import OrderedDict
 
@@ -61,7 +62,8 @@ class Insect:
 
     damage = 0
     # ADD CLASS ATTRIBUTES HERE
-
+    is_waterproof = False
+    
     def __init__(self, health, place=None):
         """Create an Insect with a health amount and a starting PLACE."""
         self.health = health
@@ -132,8 +134,19 @@ class Ant(Insect):
         if place.ant is None:
             place.ant = self
         else:
+            
             # BEGIN Problem 8
-            assert place.ant is None, 'Two ants in {0}'.format(place)
+            if self.can_contain(place.ant):
+                temp_ant = place.ant
+                place.ant = self
+                self.store_ant(temp_ant)
+                
+            
+            elif place.ant.can_contain(self):
+                place.ant.store_ant(self)
+
+            else:
+                assert place.ant is None, 'Two ants in {0}'.format(place)
             # END Problem 8
         Insect.add_to(self, place)
 
@@ -320,6 +333,8 @@ class HungryAnt(Ant):
     food_cost = 4
     chew_duration = 3
 
+    implemented = True
+
     def __init__(self, health=1):
 
         self.chew_countdown = 0
@@ -328,8 +343,7 @@ class HungryAnt(Ant):
     def eat(self, target):
         """Will eat random bee unless chewing. Instantly brings health to 0."""
         if target is not None:
-            target.health = 0
-            target.reduce_health(0)
+            target.reduce_health(target.health)
         
 
     def action(self, gamestate):
@@ -340,9 +354,10 @@ class HungryAnt(Ant):
 
         else:
             rand_bee = choose_bee(self.place.bees)
+            print("DEBUG: ", self.chew_countdown)
             if rand_bee:
                 self.eat(rand_bee)
-                self.chew_countdown = 3
+                self.chew_countdown = self.chew_duration
             
 
 # END Problem 7
@@ -361,11 +376,13 @@ class ContainerAnt(Ant):
     def can_contain(self, other):
         # BEGIN Problem 8
         "*** YOUR CODE HERE ***"
+        return self.ant_contained == None and not other.is_container
         # END Problem 8
 
     def store_ant(self, ant):
         # BEGIN Problem 8
         "*** YOUR CODE HERE ***"
+        self.ant_contained = ant
         # END Problem 8
 
     def remove_ant(self, ant):
@@ -386,6 +403,9 @@ class ContainerAnt(Ant):
     def action(self, gamestate):
         # BEGIN Problem 8
         "*** YOUR CODE HERE ***"
+        #Pass through the gamestate if there is an ant being contained 
+        if self.ant_contained:
+            self.ant_contained.action(gamestate)
         # END Problem 8
 
 
@@ -396,11 +416,35 @@ class BodyguardAnt(ContainerAnt):
     food_cost = 4
     # OVERRIDE CLASS ATTRIBUTES HERE
     # BEGIN Problem 8
-    implemented = False   # Change to True to view in the GUI
+    implemented = True   # Change to True to view in the GUI
+
+    def __init__(self, health=2):
+        super().__init__(health)
     # END Problem 8
 
 # BEGIN Problem 9
 # The TankAnt class
+class TankAnt(ContainerAnt):
+
+    name = 'Tank'
+    food_cost = 6
+    #Overriding damage from Insect
+    damage = 1
+
+    implemented = True
+
+    #Overriding init and action methods
+    def __init__(self, health=2):
+        super().__init__(health)
+    
+    def action(self, gamestate):
+        # Created a copy to iterate over so we would not mutate the values while running
+        copy_bees = self.place.bees[:]
+        
+        for bee in copy_bees:
+            bee.reduce_health(self.damage)
+
+        super().action(gamestate)
 # END Problem 9
 
 
@@ -412,10 +456,23 @@ class Water(Place):
         its health to 0."""
         # BEGIN Problem 10
         "*** YOUR CODE HERE ***"
+       
+        if insect.is_waterproof:
+            super().add_insect(insect)
+
+        else:
+            super().add_insect(insect)
+            insect.reduce_health(insect.health)
         # END Problem 10
 
 # BEGIN Problem 11
 # The ScubaThrower class
+class ScubaThrower(ThrowerAnt):
+
+    name = 'Scuba'
+    food_cost = 6
+    is_waterproof = True
+
 # END Problem 11
 
 # BEGIN Problem EC
@@ -472,6 +529,7 @@ class Bee(Insect):
     name = 'Bee'
     damage = 1
     # OVERRIDE CLASS ATTRIBUTES HERE
+    is_waterproof = True
 
     def sting(self, ant):
         """Attack an ANT, reducing its health by 1."""
