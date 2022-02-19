@@ -1,4 +1,6 @@
 ; Question 1
+
+(define (identity x) x)
 ; 
 (define (cddr s) (cdr (cdr s)))
 
@@ -37,16 +39,25 @@
 ; Question 4
 ; 
 (define (accumulate merger start n term)
-  'YOUR-CODE-HERE)
+    (if (= 1 n)
+        (merger start n)
+        (merger (term n) (accumulate merger start (- n 1) term))
+ ))
 
 ; Question 5
 ; 
-(define (without-duplicates lst) 'YOUR-CODE-HERE)
+(define (without-duplicates lst) 
+  (cond ((null? lst) '())
+        ((= (car lst)) (cons (car lst) (filter-lst = (cdr lst))))))
+
 
 ; Question 7
 ; 
 (define (accumulate-tail merger start n term)
-  'YOUR-CODE-HERE)
+  (if (= 1 n)
+        (merger start n)
+        (merger (term n) (accumulate merger start (- n 1) term))
+ ))
 
 ; Optional Question
 ; 
@@ -134,3 +145,4 @@
 (define x^3 (make-exp 'x 3))
 
 (define (derive-exp exp var) 'YOUR-CODE-HERE)
+
