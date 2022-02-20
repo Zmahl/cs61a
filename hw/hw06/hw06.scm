@@ -47,17 +47,26 @@
 ; Question 5
 ; 
 (define (without-duplicates lst) 
-  (cond ((null? lst) '())
-        ((= (car lst)) (cons (car lst) (filter-lst = (cdr lst))))))
+  (if (null? lst)
+      '()
+      (cons (car lst) (without-duplicates
+                          (filter-lst (lambda (x)
+                            (not (= x (car lst)))) lst))))
+  )      
+                
 
 
 ; Question 7
 ; 
 (define (accumulate-tail merger start n term)
-  (if (= 1 n)
-        (merger start n)
-        (merger (term n) (accumulate merger start (- n 1) term))
- ))
+  (begin (define (helper cur ans)
+           (if (= cur (+ n 1))
+               ans
+               (helper (+ cur 1) (merger ans (term cur)))
+           )
+         )
+         (helper 1 start)
+  ))
 
 ; Optional Question
 ; 
