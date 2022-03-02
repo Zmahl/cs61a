@@ -135,7 +135,9 @@ def scheme_read(src):
         # END PROBLEM 1
     elif val == "'":
         # BEGIN PROBLEM 6
-        "*** YOUR CODE HERE ***"
+        # Create a Pair('quote', Pair(src)) from the ' symbol
+        # Then recursively call scheme read to read the rest of the expression
+        return Pair('quote', Pair(scheme_read(src), nil))
         # END PROBLEM 6
     elif val not in DELIMITERS:
         return val
