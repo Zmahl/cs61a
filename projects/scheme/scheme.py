@@ -35,10 +35,19 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 4
-        operator = expr.first
+        #Procedure comes in as string and must be evaluated first
+        operator = scheme_eval(expr.first, env)
+
+        #After operature is evaluated, we check if it is a valid procedure
         validate_procedure(operator)
 
+        #Create a Scheme list usings map function
+        #Use lambda function to evaluate 1 at a time and add to list
+        #Scheme_eval already evaluates numbers
+        operands = expr.rest.map(lambda x: scheme_eval(x, env))
 
+        #Pass operator and operands to scheme_apply to apply the procedure
+        return scheme_apply(operator, operands, env)
         # END PROBLEM 4
 
 
@@ -278,7 +287,12 @@ def do_define_form(expressions, env):
     if scheme_symbolp(target):
         validate_form(expressions, 2, 2)  # Checks that expressions is a list of length exactly 2
         # BEGIN PROBLEM 5
-        "*** YOUR CODE HERE ***"
+
+        #Rest.first accesses the entire value within Scheme list to evaluate
+        val = scheme_eval(expressions.rest.first, env)
+
+        env.define(target, val)
+        return target
         # END PROBLEM 5
     elif isinstance(target, Pair) and scheme_symbolp(target.first):
         # BEGIN PROBLEM 9
