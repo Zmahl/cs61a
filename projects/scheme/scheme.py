@@ -35,7 +35,10 @@ def scheme_eval(expr, env, _=None):  # Optional third argument is ignored
         return SPECIAL_FORMS[first](rest, env)
     else:
         # BEGIN PROBLEM 4
-        "*** YOUR CODE HERE ***"
+        operator = expr.first
+        validate_procedure(operator)
+
+
         # END PROBLEM 4
 
 
@@ -96,13 +99,24 @@ class Frame:
     def define(self, symbol, value):
         """Define Scheme SYMBOL to have VALUE."""
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        if symbol not in self.bindings:
+            self.bindings[symbol] = value
+        
+        else:
+            self.bindings[symbol] = value
         # END PROBLEM 2
 
     def lookup(self, symbol):
         """Return the value bound to SYMBOL. Errors if SYMBOL is not found."""
         # BEGIN PROBLEM 2
-        "*** YOUR CODE HERE ***"
+        if symbol in self.bindings:
+            return self.bindings[symbol]
+        
+        else:
+
+            if self.parent != None:
+                return self.parent.lookup(symbol)
+            
         # END PROBLEM 2
         raise SchemeError('unknown identifier: {0}'.format(symbol))
 
@@ -162,7 +176,23 @@ class BuiltinProcedure(Procedure):
         # Convert a Scheme list to a Python list
         arguments_list = []
         # BEGIN PROBLEM 3
-        "*** YOUR CODE HERE ***"
+
+        # Checks initially if args is empty. If it is empty, this will make scheme interpret args as 0
+        if args == nil:
+            args.first = 0
+        
+        else:
+            #This iterates through the 'linked list' until we hit the end of pair list --> nil
+            while args:
+                #Appends the first element of the Pair, then sets args = to the rest of the linked list
+                arguments_list.append(args.first)
+                args = args.rest
+        
+        # If expect_env is true, this will add the variables from the parent frame  to the arg list
+        if self.expect_env:
+            arguments_list.append(env)
+
+        print("DEBUG: ", arguments_list)
         # END PROBLEM 3
         try:
             return self.fn(*arguments_list)

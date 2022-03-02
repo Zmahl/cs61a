@@ -131,7 +131,7 @@ def scheme_read(src):
         # END PROBLEM 1
     elif val == '(':
         # BEGIN PROBLEM 1
-        read_tail(src.rest)
+        return read_tail(src)
         # END PROBLEM 1
     elif val == "'":
         # BEGIN PROBLEM 6
@@ -169,11 +169,9 @@ def read_tail(src):
             return expr
         else:
             # BEGIN PROBLEM 1
-            
-            if src.current() == '(':
-                raise SyntaxError('unexpected character "(" ')
-            pair_val = src.pop_first()
-            return Pair(pair_val, read_tail(src))
+            # Returns a Pair by calling scheme_read on the current element, and goes to the end
+            # of the expresssion by calling read_tail
+            return Pair(scheme_read(src), read_tail(src))
             # END PROBLEM 1
     except EOFError:
         raise SyntaxError('unexpected end of file')
